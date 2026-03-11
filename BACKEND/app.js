@@ -1,0 +1,20 @@
+const express = require("express");
+const cors = require("cors");
+
+const app = express();
+
+app.use(cors({
+  origin: "http://localhost:5173"
+}));
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("🚀 API OutfAit funcionando correctamente");
+});
+
+app.use("/api/auth", require("./src/routes/auth.routes"));
+app.use("/api/products", require("./src/routes/product.routes"));
+app.use("/api/orders", require("./src/routes/order.routes"));
+app.use("/api/outfit", require("./src/routes/outfit.routes"));
+
+module.exports = app;
