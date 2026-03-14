@@ -3,8 +3,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 5%;
-  background: #111;
-  border-bottom: 1px solid #222;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .logo {
@@ -13,7 +13,7 @@
 }
 
 .logo span {
-  color: #ff4d4d;
+  color: var(--accent-gold);
 }
 
 .links a {
@@ -23,5 +23,19 @@
 }
 
 .links a:hover {
-  color: #ff4d4d;
+  color: var(--accent-gold);
+}
+
+.cart-link {
+  position: relative;
+}
+
+.cart-count {
+  background: var(--accent-gold);
+  color: var(--bg-primary);
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-left: 0.5rem;
 }

@@ -1,14 +1,9 @@
 const router = require("express").Router();
-const productService = require("../services/product.service");
+const productController = require("../controllers/product.controller");
 
-router.get("/", async (req, res) => {
-  const products = await productService.getAll();
-  res.json(products);
-});
-
-router.post("/", async (req, res) => {
-  const product = await productService.create(req.body);
-  res.json(product);
-});
+router.get("/", productController.getProducts);
+router.post("/", productController.createProduct);
+router.put("/:id", productController.updateProduct);
+router.delete("/:id", productController.deleteProduct);
 
 module.exports = router;

@@ -9,7 +9,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
+  background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(26, 26, 26, 0.8) 50%, rgba(42, 42, 42, 0.8) 100%), url('/img/decoracion-tienda.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   position: relative;
   overflow: hidden;
 }
@@ -31,7 +34,7 @@
 .blob-1 {
   width: 400px;
   height: 400px;
-  background: #ff4d4d;
+  background: var(--accent-gold);
   top: -50px;
   right: -50px;
   animation: float 6s ease-in-out infinite;
@@ -40,7 +43,7 @@
 .blob-2 {
   width: 300px;
   height: 300px;
-  background: #00d4ff;
+  background: var(--accent-silver);
   bottom: -50px;
   left: -50px;
   animation: float 8s ease-in-out infinite 1s;
@@ -67,7 +70,7 @@
   font-size: clamp(2.5rem, 8vw, 4rem);
   font-weight: 800;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #fff 0%, #ff4d4d 100%);
+  background: linear-gradient(135deg, #fff 0%, var(--accent-gold) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -103,25 +106,25 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #ff4d4d 0%, #ff1f1f 100%);
-  color: white;
-  box-shadow: 0 10px 30px rgba(255, 77, 77, 0.3);
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--hover-gold) 100%);
+  color: var(--bg-primary);
+  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 15px 40px rgba(255, 77, 77, 0.4);
+  box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
 }
 
 .btn-secondary {
   background: transparent;
-  color: #ff4d4d;
-  border: 2px solid #ff4d4d;
+  color: var(--accent-gold);
+  border: 2px solid var(--accent-gold);
 }
 
 .btn-secondary:hover {
-  background: #ff4d4d;
-  color: white;
+  background: var(--accent-gold);
+  color: var(--bg-primary);
   transform: translateY(-2px);
 }
 
@@ -140,7 +143,7 @@
 .features h2 {
   font-size: 2.5rem;
   margin-bottom: 4rem;
-  background: linear-gradient(135deg, #ff4d4d 0%, #fff 100%);
+  background: linear-gradient(135deg, var(--accent-gold) 0%, #fff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -165,8 +168,8 @@
 
 .feature-card:hover {
   transform: translateY(-5px);
-  border-color: #ff4d4d;
-  box-shadow: 0 15px 40px rgba(255, 77, 77, 0.2);
+  border-color: var(--accent-gold);
+  box-shadow: 0 15px 40px rgba(255, 215, 0, 0.2);
 }
 
 .feature-icon {
@@ -196,7 +199,7 @@
 .categories h2 {
   font-size: 2.5rem;
   margin-bottom: 4rem;
-  background: linear-gradient(135deg, #00d4ff 0%, #ff4d4d 100%);
+  background: linear-gradient(135deg, var(--accent-silver) 0%, var(--accent-gold) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -211,7 +214,7 @@
 }
 
 .category-card {
-  background: linear-gradient(135deg, #ff4d4d 0%, #ff1f1f 100%);
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--hover-gold) 100%);
   padding: 2rem;
   border-radius: 12px;
   transition: all 0.3s ease;
@@ -221,14 +224,14 @@
   justify-content: center;
   gap: 1rem;
   text-decoration: none;
-  color: white;
+  color: var(--bg-primary);
   min-height: 150px;
-  box-shadow: 0 10px 30px rgba(255, 77, 77, 0.2);
+  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
 }
 
 .category-card:hover {
   transform: scale(1.05);
-  box-shadow: 0 15px 40px rgba(255, 77, 77, 0.4);
+  box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
 }
 
 .category-icon {
@@ -245,8 +248,8 @@
   padding: 6rem 2rem;
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
   text-align: center;
-  border-top: 2px solid #ff4d4d;
-  border-bottom: 2px solid #ff4d4d;
+  border-top: 2px solid var(--accent-gold);
+  border-bottom: 2px solid var(--accent-gold);
 }
 
 .cta-section h2 {

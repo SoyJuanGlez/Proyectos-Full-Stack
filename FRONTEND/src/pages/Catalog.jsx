@@ -1,20 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getProducts } from "../services/productService";
+import { useCartStore } from "../store/cartStore";
 import "../styles/catalog.css";
 
 const Catalog = () => {
+  const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("todos");
   const [sortBy, setSortBy] = useState("relevancia");
+  const [priceRange, setPriceRange] = useState([0, 2000]);
+  const [selectedStyle, setSelectedStyle] = useState("todos");
+  const [selectedColor, setSelectedColor] = useState("todos");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { addToCart } = useCartStore();
 
-  // Datos de ejemplo
-  const products = [
-    { id: 1, name: "Hoodie Oversized", price: 850, category: "hoodies", image: "" },
-    { id: 2, name: "Camiseta Streetwear", price: 450, category: "camisetas", image: "" },
-    { id: 3, name: "Pantalón Cargo", price: 950, category: "pantalones", image: "" },
-    { id: 4, name: "Hoodie Negro Premium", price: 1200, category: "hoodies", image: "" },
-    { id: 5, name: "Camiseta Gráfica", price: 520, category: "camisetas", image: "" },
-    { id: 6, name: "Mochila Técnica", price: 680, category: "accesorios", image: "" },
-  ];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await getProducts();
+        setProducts(data);
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setError("Error al cargar productos. Inténtalo de nuevo.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const categories = [
     { id: "todos", name: "Todos" },
@@ -24,11 +39,18 @@ const Catalog = () => {
     { id: "accesorios", name: "Accesorios" }
   ];
 
+  // Obtener estilos y colores únicos de los productos
+  const styles = ["todos", ...new Set(products.map(p => p?.style).filter(s => s && s.trim()))];
+  const colors = ["todos", ...new Set(products.map(p => p?.color).filter(c => c && c.trim()))];
+
   // Filtrar y ordenar productos
   let filtered = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "todos" || p.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesPrice = p.price >= priceRange[0] && p.price <= priceRange[1];
+    const matchesStyle = selectedStyle === "todos" || (p.style && p.style === selectedStyle);
+    const matchesColor = selectedColor === "todos" || (p.color && p.color === selectedColor);
+    return matchesSearch && matchesCategory && matchesPrice && matchesStyle && matchesColor;
   });
 
   if (sortBy === "precio-menor") {
@@ -69,6 +91,43 @@ const Catalog = () => {
           </div>
 
           <div className="filter-group">
+            <label>Estilo</label>
+            <select value={selectedStyle} onChange={(e) => setSelectedStyle(e.target.value)}>
+              {styles.map(style => (
+                <option key={style} value={style}>{style === "todos" ? "Todos" : style}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Color</label>
+            <select value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)}>
+              {colors.map(color => (
+                <option key={color} value={color}>{color === "todos" ? "Todos" : color}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Rango de Precio</label>
+            <div className="price-range">
+              <input
+                type="number"
+                placeholder="Min"
+                value={priceRange[0]}
+                onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+              />
+              <span>-</span>
+              <input
+                type="number"
+                placeholder="Max"
+                value={priceRange[1]}
+                onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+              />
+            </div>
+          </div>
+
+          <div className="filter-group">
             <label>Ordenar por</label>
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
               <option value="relevancia">Relevancia</option>
@@ -83,13 +142,36 @@ const Catalog = () => {
       {/* Results Info */}
       <div className="results-info">
         <p>Mostrando <strong>{filtered.length}</strong> productos</p>
+        {(searchTerm || selectedCategory !== "todos" || selectedStyle !== "todos" || selectedColor !== "todos" || priceRange[0] > 0 || priceRange[1] < 2000) && (
+          <button 
+            onClick={() => {
+              setSearchTerm("");
+              setSelectedCategory("todos");
+              setSelectedStyle("todos");
+              setSelectedColor("todos");
+              setPriceRange([0, 2000]);
+            }} 
+            className="btn-reset"
+          >
+            Limpiar filtros
+          </button>
+        )}
       </div>
 
       {/* Products Grid */}
-      {filtered.length > 0 ? (
+      {loading ? (
+        <div className="loading">
+          <p>Cargando productos...</p>
+        </div>
+      ) : error ? (
+        <div className="error">
+          <p>{error}</p>
+          <button onClick={() => window.location.reload()} className="btn btn-primary">Reintentar</button>
+        </div>
+      ) : filtered.length > 0 ? (
         <div className="product-grid">
           {filtered.map(product => (
-            <div key={product.id} className="product-card">
+            <div key={product._id} className="product-card">
               <div className="product-image-wrapper">
                 <img src={product.image} alt={product.name} className="product-image" />
                 <span className="product-badge">Stock</span>
@@ -97,7 +179,7 @@ const Catalog = () => {
               <div className="product-info">
                 <h3>{product.name}</h3>
                 <p className="product-price">${product.price.toLocaleString()}</p>
-                <button className="btn-add-cart">Agregar al carrito</button>
+                <button className="btn-add-cart" onClick={() => addToCart(product)}>Agregar al carrito</button>
               </div>
             </div>
           ))}

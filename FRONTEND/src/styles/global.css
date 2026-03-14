@@ -1,3 +1,18 @@
+/* Variables de color para psicología del color premium */
+:root {
+  --bg-primary: #0a0a0a; /* Negro profundo: Lujo y elegancia */
+  --bg-secondary: #1a1a1a; /* Gris oscuro: Neutralidad sofisticada */
+  --bg-tertiary: #2a2a2a; /* Gris medio: Variación sutil */
+  --text-primary: #ffffff; /* Blanco: Pureza */
+  --text-secondary: #b8b8b8; /* Gris claro: Subtítulos elegantes */
+  --accent-gold: #ffd700; /* Dorado: Lujo y premium */
+  --accent-silver: #c0c0c0; /* Plateado: Moderno y refinado */
+  --accent-navy: #001f3f; /* Azul navy: Confianza y profundidad */
+  --border-color: #404040; /* Gris oscuro: Separación elegante */
+  --hover-gold: #ffed4e; /* Dorado más claro: Hover premium */
+  --success-green: #00d4aa; /* Verde menta: Éxito refinado */
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -6,8 +21,8 @@
 }
 
 body {
-  background-color: #0f0f0f;
-  color: white;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   line-height: 1.6;
 }
 
@@ -30,14 +45,60 @@ a {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: var(--bg-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ff4d4d;
+  background: var(--accent-gold);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #ff1f1f;
+  background: var(--hover-gold);
+}
+
+/* Botones generales */
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--hover-gold) 100%);
+  color: var(--bg-primary);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--hover-gold) 0%, var(--accent-gold) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--accent-silver) 0%, #e0e0e0 100%);
+  color: var(--bg-primary);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, #e0e0e0 0%, var(--accent-silver) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(192, 192, 192, 0.4);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--success-green) 0%, #00f5d4 100%);
+  color: var(--bg-primary);
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #00f5d4 0%, var(--success-green) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 212, 170, 0.4);
 }

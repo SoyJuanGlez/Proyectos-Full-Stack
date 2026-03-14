@@ -1,20 +1,57 @@
 import { useCartStore } from "../store/cartStore";
+import "../styles/cart.css";
 
 const Cart = () => {
-  const { cart, removeFromCart } = useCartStore();
+  const { cart, removeFromCart, updateQuantity, clearCart } = useCartStore();
+
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="p-10">
-      <h2 className="text-3xl mb-6">Carrito</h2>
+    <div className="cart">
+      <div className="cart-header">
+        <h1>Carrito de Compras</h1>
+        <p>{cart.length} producto(s) en tu carrito</p>
+      </div>
 
-      {cart.map((item) => (
-        <div key={item._id} className="flex justify-between mb-4">
-          <p>{item.name}</p>
-          <button onClick={() => removeFromCart(item._id)}>
-            Eliminar
-          </button>
+      {cart.length === 0 ? (
+        <div className="empty-cart">
+          <p>Tu carrito está vacío</p>
+          <a href="/catalog" className="btn btn-primary">Ir al Catálogo</a>
         </div>
-      ))}
+      ) : (
+        <>
+          <div className="cart-items">
+            {cart.map((item) => (
+              <div key={item._id} className="cart-item">
+                <img src={item.image} alt={item.name} className="cart-item-image" />
+                <div className="cart-item-info">
+                  <h3>{item.name}</h3>
+                  <p className="cart-item-price">${item.price.toLocaleString()}</p>
+                  <div className="quantity-controls">
+                    <button onClick={() => updateQuantity(item._id, item.quantity - 1)}>-</button>
+                    <span>{item.quantity}</span>
+                    <button onClick={() => updateQuantity(item._id, item.quantity + 1)}>+</button>
+                  </div>
+                </div>
+                <div className="cart-item-total">
+                  <p>${(item.price * item.quantity).toLocaleString()}</p>
+                  <button onClick={() => removeFromCart(item._id)} className="btn-remove">Eliminar</button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="cart-summary">
+            <div className="cart-total">
+              <h3>Total: ${total.toLocaleString()}</h3>
+            </div>
+            <div className="cart-actions">
+              <button onClick={clearCart} className="btn btn-secondary">Vaciar Carrito</button>
+              <button className="btn btn-primary">Proceder al Pago</button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
