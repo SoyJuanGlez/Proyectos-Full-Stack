@@ -336,6 +336,47 @@
   box-shadow: 0 8px 18px rgba(255, 215, 0, 0.25);
 }
 
+.product-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.product-actions button {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-edit {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: var(--accent-gold);
+  color: var(--text-primary);
+}
+
+.btn-edit:hover {
+  background: rgba(255, 215, 0, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(255, 215, 0, 0.25);
+}
+
+.btn-delete {
+  background: rgba(255, 77, 77, 0.12);
+  border-color: rgba(255, 77, 77, 0.8);
+  color: #ffdddd;
+}
+
+.btn-delete:hover {
+  background: rgba(255, 77, 77, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(255, 77, 77, 0.3);
+}
+
 /* No Products */
 .no-products {
   text-align: center;

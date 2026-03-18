@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getProducts, createProduct } from "../services/productService";
+import { getProducts, createProduct, updateProduct, deleteProduct } from "../services/productService";
 import { useCartStore } from "../store/cartStore";
 import "../styles/catalog.css";
 
@@ -14,6 +14,8 @@ const Catalog = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [formMode, setFormMode] = useState("create"); // "create" or "edit"
+  const [editingId, setEditingId] = useState(null);
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: 0,
@@ -43,24 +45,40 @@ const Catalog = () => {
     fetchProducts();
   }, []);
 
-  const handleCreateProduct = async (e) => {
+  const handleSubmitProduct = async (e) => {
     e.preventDefault();
     setCreateError(null);
     setCreateSuccess(null);
 
     try {
-      const created = await createProduct({
-        name: newProduct.name,
-        price: Number(newProduct.price),
-        image: newProduct.image,
-        category: newProduct.category,
-        style: newProduct.style,
-        color: newProduct.color,
-        stock: Number(newProduct.stock)
-      });
+      if (formMode === "create") {
+        const created = await createProduct({
+          name: newProduct.name,
+          price: Number(newProduct.price),
+          image: newProduct.image,
+          category: newProduct.category,
+          style: newProduct.style,
+          color: newProduct.color,
+          stock: Number(newProduct.stock)
+        });
 
-      setProducts((prev) => [created, ...prev]);
-      setCreateSuccess("Producto creado correctamente.");
+        setProducts((prev) => [created, ...prev]);
+        setCreateSuccess("Producto creado correctamente.");
+      } else {
+        const updated = await updateProduct(editingId, {
+          name: newProduct.name,
+          price: Number(newProduct.price),
+          image: newProduct.image,
+          category: newProduct.category,
+          style: newProduct.style,
+          color: newProduct.color,
+          stock: Number(newProduct.stock)
+        });
+
+        setProducts((prev) => prev.map((p) => (p._id === editingId ? updated : p)));
+        setCreateSuccess("Producto actualizado correctamente.");
+      }
+
       setNewProduct({
         name: "",
         price: 0,
@@ -70,10 +88,44 @@ const Catalog = () => {
         color: "",
         stock: 0
       });
+      setFormMode("create");
+      setEditingId(null);
       setShowCreateForm(false);
     } catch (error) {
-      console.error("Error creando producto:", error);
-      setCreateError("No se pudo crear el producto. Revisa los datos o la conexión.");
+      console.error("Error guardando producto:", error);
+      setCreateError("No se pudo guardar el producto. Revisa los datos o la conexión.");
+    }
+  };
+
+  const handleEditProduct = (product) => {
+    setFormMode("edit");
+    setEditingId(product._id);
+    setNewProduct({
+      name: product.name || "",
+      price: product.price || 0,
+      image: product.image || "",
+      category: product.category || "hoodies",
+      style: product.style || "",
+      color: product.color || "",
+      stock: product.stock || 0
+    });
+    setCreateError(null);
+    setCreateSuccess(null);
+    setShowCreateForm(true);
+  };
+
+  const handleDeleteProduct = async (id) => {
+    const confirmed = window.confirm("¿Estás seguro de que deseas eliminar este producto?");
+    if (!confirmed) return;
+
+    try {
+      await deleteProduct(id);
+      setProducts((prev) => prev.filter((p) => p._id !== id));
+      setCreateSuccess("Producto eliminado correctamente.");
+      setCreateError(null);
+    } catch (error) {
+      console.error("Error eliminando producto:", error);
+      setCreateError("No se pudo eliminar el producto.");
     }
   };
 
@@ -118,6 +170,17 @@ const Catalog = () => {
           onClick={() => {
             setCreateError(null);
             setCreateSuccess(null);
+            setFormMode("create");
+            setEditingId(null);
+            setNewProduct({
+              name: "",
+              price: 0,
+              image: "",
+              category: "hoodies",
+              style: "",
+              color: "",
+              stock: 0
+            });
             setShowCreateForm((prev) => !prev);
           }}
         >
@@ -127,10 +190,10 @@ const Catalog = () => {
 
       {showCreateForm && (
         <div className="create-product-form">
-          <h2>Nuevo producto</h2>
+          <h2>{formMode === "create" ? "Nuevo producto" : "Editar producto"}</h2>
           {createError && <p className="form-error">{createError}</p>}
           {createSuccess && <p className="form-success">{createSuccess}</p>}
-          <form onSubmit={handleCreateProduct}>
+          <form onSubmit={handleSubmitProduct}>
             <div className="form-row">
               <label>Nombre</label>
               <input
@@ -309,7 +372,17 @@ const Catalog = () => {
               <div className="product-info">
                 <h3>{product.name}</h3>
                 <p className="product-price">${product.price.toLocaleString()}</p>
-                <button className="btn-add-cart" onClick={() => addToCart(product)}>Agregar al carrito</button>
+                <div className="product-actions">
+                  <button className="btn-add-cart" onClick={() => addToCart(product)}>
+                    Agregar al carrito
+                  </button>
+                  <button className="btn-edit" onClick={() => handleEditProduct(product)}>
+                    Editar
+                  </button>
+                  <button className="btn-delete" onClick={() => handleDeleteProduct(product._id)}>
+                    Eliminar
+                  </button>
+                </div>
               </div>
             </div>
           ))}
