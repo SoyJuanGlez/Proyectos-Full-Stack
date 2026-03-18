@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getProducts } from "../services/productService";
+import { getProducts, createProduct } from "../services/productService";
 import { useCartStore } from "../store/cartStore";
 import "../styles/catalog.css";
 
@@ -13,6 +13,18 @@ const Catalog = () => {
   const [selectedColor, setSelectedColor] = useState("todos");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    price: 0,
+    image: "",
+    category: "hoodies",
+    style: "",
+    color: "",
+    stock: 0
+  });
+  const [createError, setCreateError] = useState(null);
+  const [createSuccess, setCreateSuccess] = useState(null);
   const { addToCart } = useCartStore();
 
   useEffect(() => {
@@ -30,6 +42,40 @@ const Catalog = () => {
     };
     fetchProducts();
   }, []);
+
+  const handleCreateProduct = async (e) => {
+    e.preventDefault();
+    setCreateError(null);
+    setCreateSuccess(null);
+
+    try {
+      const created = await createProduct({
+        name: newProduct.name,
+        price: Number(newProduct.price),
+        image: newProduct.image,
+        category: newProduct.category,
+        style: newProduct.style,
+        color: newProduct.color,
+        stock: Number(newProduct.stock)
+      });
+
+      setProducts((prev) => [created, ...prev]);
+      setCreateSuccess("Producto creado correctamente.");
+      setNewProduct({
+        name: "",
+        price: 0,
+        image: "",
+        category: "hoodies",
+        style: "",
+        color: "",
+        stock: 0
+      });
+      setShowCreateForm(false);
+    } catch (error) {
+      console.error("Error creando producto:", error);
+      setCreateError("No se pudo crear el producto. Revisa los datos o la conexión.");
+    }
+  };
 
   const categories = [
     { id: "todos", name: "Todos" },
@@ -67,7 +113,91 @@ const Catalog = () => {
       <div className="catalog-header">
         <h1>Catálogo de Productos</h1>
         <p>Descubre nuestra colección exclusiva de streetwear premium</p>
+        <button
+          className="btn-create"
+          onClick={() => {
+            setCreateError(null);
+            setCreateSuccess(null);
+            setShowCreateForm((prev) => !prev);
+          }}
+        >
+          {showCreateForm ? "Cancelar" : "Agregar producto"}
+        </button>
       </div>
+
+      {showCreateForm && (
+        <div className="create-product-form">
+          <h2>Nuevo producto</h2>
+          {createError && <p className="form-error">{createError}</p>}
+          {createSuccess && <p className="form-success">{createSuccess}</p>}
+          <form onSubmit={handleCreateProduct}>
+            <div className="form-row">
+              <label>Nombre</label>
+              <input
+                value={newProduct.name}
+                onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                required
+              />
+            </div>
+            <div className="form-row">
+              <label>Precio</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={newProduct.price}
+                onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                required
+              />
+            </div>
+            <div className="form-row">
+              <label>Imagen (ruta)</label>
+              <input
+                value={newProduct.image}
+                onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
+              />
+            </div>
+            <div className="form-row">
+              <label>Categoría</label>
+              <select
+                value={newProduct.category}
+                onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+              >
+                <option value="hoodies">Hoodies</option>
+                <option value="camisetas">Camisetas</option>
+                <option value="pantalones">Pantalones</option>
+                <option value="accesorios">Accesorios</option>
+              </select>
+            </div>
+            <div className="form-row">
+              <label>Estilo</label>
+              <input
+                value={newProduct.style}
+                onChange={(e) => setNewProduct({ ...newProduct, style: e.target.value })}
+              />
+            </div>
+            <div className="form-row">
+              <label>Color</label>
+              <input
+                value={newProduct.color}
+                onChange={(e) => setNewProduct({ ...newProduct, color: e.target.value })}
+              />
+            </div>
+            <div className="form-row">
+              <label>Stock</label>
+              <input
+                type="number"
+                min="0"
+                value={newProduct.stock}
+                onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
+              />
+            </div>
+            <button type="submit" className="btn-submit">
+              Crear producto
+            </button>
+          </form>
+        </div>
+      )}
 
       {/* Filters Section */}
       <div className="catalog-controls">
