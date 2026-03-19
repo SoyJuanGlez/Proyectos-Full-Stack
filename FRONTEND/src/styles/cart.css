@@ -130,10 +130,24 @@
 .cart-summary {
   max-width: 1200px;
   margin: 0 auto;
-  background: var(--bg-secondary);
+  background: rgba(12, 24, 52, 0.76);
   border-radius: 12px;
   padding: 2rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(120, 144, 212, 0.25);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.cart-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  color: #b5c0df;
+  font-size: 0.95rem;
+}
+
+.cart-details strong {
+  color: #fff;
 }
 
 .cart-total h3 {

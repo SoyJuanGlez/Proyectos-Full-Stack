@@ -1,10 +1,24 @@
+import { useMemo } from "react";
 import { useCartStore } from "../store/cartStore";
 import "../styles/cart.css";
 
 const Cart = () => {
-  const { cart, removeFromCart, updateQuantity, clearCart } = useCartStore();
+  const {
+    cart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    incrementQuantity,
+    decrementQuantity,
+  } = useCartStore();
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = useMemo(() => {
+    return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  }, [cart]);
+
+  const totalItems = useMemo(() => {
+    return cart.reduce((sum, item) => sum + item.quantity, 0);
+  }, [cart]);
 
   return (
     <div className="cart">
@@ -28,9 +42,9 @@ const Cart = () => {
                   <h3>{item.name}</h3>
                   <p className="cart-item-price">${item.price.toLocaleString()}</p>
                   <div className="quantity-controls">
-                    <button onClick={() => updateQuantity(item._id, item.quantity - 1)}>-</button>
+                    <button onClick={() => decrementQuantity(item._id)}>-</button>
                     <span>{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item._id, item.quantity + 1)}>+</button>
+                    <button onClick={() => incrementQuantity(item._id)}>+</button>
                   </div>
                 </div>
                 <div className="cart-item-total">
@@ -42,12 +56,16 @@ const Cart = () => {
           </div>
 
           <div className="cart-summary">
+            <div className="cart-details">
+              <p>Productos: <strong>{totalItems}</strong></p>
+              <p>Subtotal: <strong>${total.toLocaleString()}</strong></p>
+            </div>
             <div className="cart-total">
-              <h3>Total: ${total.toLocaleString()}</h3>
+              <h3>Total: <span>${total.toLocaleString()}</span></h3>
             </div>
             <div className="cart-actions">
               <button onClick={clearCart} className="btn btn-secondary">Vaciar Carrito</button>
-              <button className="btn btn-primary">Proceder al Pago</button>
+              <button className="btn btn-primary" disabled={total === 0}>Proceder al Pago</button>
             </div>
           </div>
         </>

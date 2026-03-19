@@ -36,6 +36,28 @@ export const useCartStore = create(
           ),
         })),
 
+      incrementQuantity: (id) =>
+        set((state) => ({
+          cart: state.cart.map((item) =>
+            item._id === id ? { ...item, quantity: item.quantity + 1 } : item
+          ),
+        })),
+
+      decrementQuantity: (id) =>
+        set((state) => ({
+          cart: state.cart.map((item) =>
+            item._id === id
+              ? { ...item, quantity: Math.max(1, item.quantity - 1) }
+              : item
+          ),
+        })),
+
+      getTotal: () =>
+        get().cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+
+      getItemCount: () =>
+        get().cart.reduce((sum, item) => sum + item.quantity, 0),
+
       clearCart: () => set({ cart: [] }),
     }),
     {

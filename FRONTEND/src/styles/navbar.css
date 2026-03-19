@@ -5,11 +5,16 @@
   padding: 1.5rem 5%;
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
+  font-family: 'Poppins', 'Segoe UI', Tahoma, sans-serif;
+  letter-spacing: 0.03em;
 }
 
 .logo {
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 1.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--accent-gold);
 }
 
 .logo span {
@@ -17,25 +22,74 @@
 }
 
 .links a {
-  margin-left: 2rem;
-  font-size: 0.95rem;
-  transition: 0.3s;
+  margin-left: 1.6rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #dbe3ff;
+  transition: all 0.25s ease;
+  text-transform: uppercase;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
 }
 
 .links a:hover {
-  color: var(--accent-gold);
+  color: #fff;
+  background: rgba(59, 130, 246, 0.22);
+  transform: translateY(-1px);
+}
+
+.links a.active {
+  color: #fff;
+  background: rgba(59, 130, 246, 0.35);
 }
 
 .cart-link {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .cart-count {
-  background: var(--accent-gold);
-  color: var(--bg-primary);
-  padding: 0.2rem 0.5rem;
-  border-radius: 10px;
+  background: #e2a500; /* color dorado intenso */
+  color: #081024; /* texto oscuro para contraste */
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
   font-size: 0.8rem;
-  font-weight: bold;
-  margin-left: 0.5rem;
+  font-weight: 700;
+  margin-left: 0;
+  min-width: 20px;
+  text-align: center;
+}
+
+.cart-count.zero {
+  background: #94a3b8;
+  color: #ffffff;
+}
+
+
+.improved-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8, 10, 26, 0.94);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.cart-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  color: #fff;
+  background: rgba(255,255,255,0.05);
+  font-size: 0.85rem;
+  margin-left: 1rem;
+}
+
+.cart-preview strong {
+  color: var(--accent-gold);
 }

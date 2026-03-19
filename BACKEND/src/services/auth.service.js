@@ -1,10 +1,13 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
 exports.register = async (data) => {
   const hashed = await bcrypt.hash(data.password, 10);
-  return await User.create({ ...data, password: hashed });
+  return await User.create({
+    name: data.name,
+    email: data.email,
+    password: hashed
+  });
 };
 
 exports.login = async (email, password) => {
@@ -14,6 +17,9 @@ exports.login = async (email, password) => {
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) throw new Error("Credenciales inválidas");
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-  return { user, token };
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email
+  };
 };
