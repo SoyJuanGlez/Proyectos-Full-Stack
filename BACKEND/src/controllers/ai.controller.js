@@ -3,29 +3,53 @@ const Product = require("../models/product.model");
 exports.getRecommendation = async (req, res) => {
   try {
     const { prompt } = req.body;
-    const input = prompt.toLowerCase();
-
-    // 1. Lógica de "IA" simplificada (Búsqueda semántica básica)
-    let query = {};
-    if (input.includes("formal") || input.includes("boda")) {
-      query = { category: "formal" };
-    } else if (input.includes("calle") || input.includes("urbano") || input.includes("aesthetic")) {
-      query = { style: "streetwear" };
-    } else if (input.includes("frío") || input.includes("invierno")) {
-      query = { type: "abrigo" };
+    if (!prompt) {
+      return res.status(400).json({ message: "El prompt es requerido" });
     }
 
-    // 2. Buscar artículos reales en tu MongoDB
-    const items = await Product.find(query).limit(3);
+    const input = prompt.toLowerCase();
+    let matchQuery = {};
 
-    // 3. Construir respuesta amigable
-    let reply = "Basado en lo que me cuentas, estos artículos te ayudarían a armar ese look:";
+    // 1. Lógica de "IA" con más palabras clave para OUTF-AI
+    if (input.includes("formal") || input.includes("boda") || input.includes("elegante")) {
+      matchQuery.category = "formal";
+    } else if (input.includes("calle") || input.includes("urbano") || input.includes("aesthetic") || input.includes("oversized")) {
+      matchQuery.style = "streetwear";
+    } else if (input.includes("frío") || input.includes("invierno") || input.includes("chamarra")) {
+      matchQuery.type = "abrigo";
+    } else if (input.includes("deporte") || input.includes("gym") || input.includes("entrenar")) {
+      matchQuery.category = "sport";
+    } else if (input.includes("minimal") || input.includes("básico") || input.includes("sencillo")) {
+      matchQuery.style = "minimalist";
+    }
+
+    // 2. Búsqueda Aleatoria mediante Agregación
+    // Esto evita que siempre salgan los mismos 3 productos
+    let items = await Product.aggregate([
+      { $match: matchQuery },
+      { $sample: { size: 3 } }
+    ]);
+
+    // 3. Respuesta Dinámica
+    const intros = [
+      "¡Claro! Checa estos artículos que combinan con lo que buscas:",
+      "He analizado tu estilo y creo que esto te quedaría genial:",
+      "Para ese plan, estos artículos de OUTF-AI son tendencia:",
+      "Basado en tus gustos, aquí tienes unas opciones clave:"
+    ];
+
+    let reply = intros[Math.floor(Math.random() * intros.length)];
+
+    // Si no hay resultados para la búsqueda específica, enviamos 3 aleatorios generales
     if (items.length === 0) {
-      reply = "Aún no tengo algo exacto para eso, pero mira estos estilos similares que te podrían gustar.";
+      reply = "No encontré algo exacto para esa descripción, pero mira estos estilos que te podrían gustar:";
+      items = await Product.aggregate([{ $sample: { size: 3 } }]);
     }
 
     res.json({ reply, items });
+
   } catch (error) {
-    res.status(500).json({ message: "Error procesando recomendación" });
+    console.error("Error en la recomendación de IA:", error);
+    res.status(500).json({ message: "Error procesando la recomendación" });
   }
 };

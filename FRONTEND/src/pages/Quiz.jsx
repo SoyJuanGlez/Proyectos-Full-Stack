@@ -50,7 +50,13 @@ const Quiz = () => {
             {msg.items && (
               <div className="recommended-items">
                 {msg.items.map(item => (
-                  <div key={item.id} className="mini-card">{item.name}</div>
+                  <div key={item._id} className="mini-card" onClick={() => navigate(`/product/${item._id}`)}>
+                    <img src={item.image} alt={item.name} className="mini-card-img" />
+                    <div className="mini-card-info">
+                      <span className="mini-name">{item.name}</span>
+                      <span className="mini-price">${item.price}</span>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
