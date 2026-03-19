@@ -16,5 +16,6 @@ app.use("/api/auth", require("./src/routes/auth.routes"));
 app.use("/api/products", require("./src/routes/product.routes"));
 app.use("/api/orders", require("./src/routes/order.routes"));
 app.use("/api/outfit", require("./src/routes/outfit.routes"));
+app.use("/api/ai", require("./src/routes/ai.routes"));
 
 module.exports = app;
