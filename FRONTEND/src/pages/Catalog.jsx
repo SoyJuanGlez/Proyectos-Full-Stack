@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { getProducts, createProduct, updateProduct, deleteProduct } from "../services/productService";
 import { useCartStore } from "../store/cartStore";
 import "../styles/catalog.css";
@@ -365,12 +366,16 @@ const Catalog = () => {
         <div className="product-grid">
           {filtered.map(product => (
             <div key={product._id} className="product-card">
-              <div className="product-image-wrapper">
-                <img src={product.image} alt={product.name} className="product-image" />
-                <span className="product-badge">Stock</span>
-              </div>
+              <Link to={`/product/${product._id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                <div className="product-image-wrapper">
+                  <img src={product.image} alt={product.name} className="product-image" />
+                  <span className="product-badge">Stock</span>
+                </div>
+              </Link>
               <div className="product-info">
-                <h3>{product.name}</h3>
+                <Link to={`/product/${product._id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                  <h3 style={{ cursor: "pointer" }}>{product.name}</h3>
+                </Link>
                 <p className="product-price">${product.price.toLocaleString()}</p>
                 <div className="product-actions">
                   <button className="btn-add-cart" onClick={() => addToCart(product)}>
