@@ -5,7 +5,17 @@ export const getMyOrders = async () => {
   return res.data;
 };
 
-export const createOrder = async (items, total) => {
-  const res = await api.post("/orders", { items, total });
+export const createOrder = async ({
+  items,
+  total,
+  paymentSessionId,
+  paymentStatus,
+}) => {
+  const res = await api.post("/orders", {
+    items,
+    total,
+    paymentSessionId,
+    paymentStatus,
+  });
   return res.data;
 };

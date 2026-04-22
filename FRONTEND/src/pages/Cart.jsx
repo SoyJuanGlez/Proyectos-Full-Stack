@@ -1,10 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
+import { getCurrentUser } from "../services/authService";
+import { createOrder } from "../services/orderService";
 import { createCheckoutSession, getCheckoutSession } from "../services/paymentService";
 import "../styles/cart.css";
 
+const ORDER_SNAPSHOT_KEY = "pending-order-snapshot";
+
 const Cart = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const {
     cart,
@@ -16,6 +21,8 @@ const Cart = () => {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutMessage, setCheckoutMessage] = useState("");
   const [checkoutError, setCheckoutError] = useState("");
+  const cartRef = useRef(cart);
+  const totalRef = useRef(0);
 
   const total = useMemo(() => {
     return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -26,11 +33,18 @@ const Cart = () => {
   }, [cart]);
 
   useEffect(() => {
+    cartRef.current = cart;
+    totalRef.current = total;
+  }, [cart, total]);
+
+  useEffect(() => {
     const paymentStatus = searchParams.get("payment");
     const sessionId = searchParams.get("session_id");
 
     if (paymentStatus === "cancelled") {
       setCheckoutMessage("");
+      setCheckoutError("El pago demo fue cancelado. Tu carrito sigue intacto.");
+      sessionStorage.removeItem(ORDER_SNAPSHOT_KEY);
       setSearchParams({}, { replace: true });
       return;
     }
@@ -40,18 +54,33 @@ const Cart = () => {
     const verifyPayment = async () => {
       try {
         const session = await getCheckoutSession(sessionId);
+        const storedSnapshot = sessionStorage.getItem(ORDER_SNAPSHOT_KEY);
+        const parsedSnapshot = storedSnapshot ? JSON.parse(storedSnapshot) : null;
+        const orderItems = parsedSnapshot?.items || cartRef.current;
+        const orderTotal = parsedSnapshot?.total || totalRef.current;
 
         if (session.payment_status === "paid") {
+          await createOrder({
+            items: orderItems,
+            total: orderTotal,
+            paymentSessionId: session.id,
+            paymentStatus: session.payment_status,
+          });
+
           clearCart();
+          sessionStorage.removeItem(ORDER_SNAPSHOT_KEY);
           setCheckoutError("");
-          setCheckoutMessage("Pago confirmado con Stripe. Tu carrito se vacio correctamente.");
+          setCheckoutMessage("Pago confirmado con Stripe. Tu orden ya aparece en tu historial.");
         } else {
           setCheckoutMessage("");
           setCheckoutError("Stripe devolvio la sesion, pero el pago aun no aparece como completado.");
         }
-      } catch {
+      } catch (error) {
         setCheckoutMessage("");
-        setCheckoutError("No pude verificar el pago con Stripe. Revisa la sesion o intenta de nuevo.");
+        setCheckoutError(
+          error.response?.data?.message ||
+          "No pude guardar tu orden o verificar el pago. Intenta entrar de nuevo a tu perfil."
+        );
       } finally {
         setSearchParams({}, { replace: true });
         setIsCheckingOut(false);
@@ -64,17 +93,29 @@ const Cart = () => {
   const handleCheckout = async () => {
     if (cart.length === 0) return;
 
+    if (!getCurrentUser()) {
+      setCheckoutMessage("");
+      setCheckoutError("Inicia sesion para completar tu compra y guardar tu historial de ordenes.");
+      navigate("/login");
+      return;
+    }
+
     setIsCheckingOut(true);
     setCheckoutMessage("");
     setCheckoutError("");
+    sessionStorage.setItem(ORDER_SNAPSHOT_KEY, JSON.stringify({
+      items: cart,
+      total,
+    }));
 
     try {
       const session = await createCheckoutSession(cart);
       window.location.href = session.url;
     } catch (error) {
       setCheckoutError(
-        error.response?.data?.message || "No se pudo iniciar el checkout con Stripe."
+          error.response?.data?.message || "No se pudo iniciar el checkout con Stripe."
       );
+      sessionStorage.removeItem(ORDER_SNAPSHOT_KEY);
       setIsCheckingOut(false);
     }
   };

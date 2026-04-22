@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Quiz from "./pages/Quiz";
 import ProductDetail from "./pages/ProductDetail";
+import CheckoutDemo from "./pages/CheckoutDemo";
 
 import Profile from "./pages/Profile";
 
@@ -19,6 +20,7 @@ function App() {
         <Route path="/catalog" element={<Catalog />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout-demo" element={<CheckoutDemo />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/quiz" element={<Quiz />} />

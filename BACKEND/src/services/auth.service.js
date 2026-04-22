@@ -1,6 +1,7 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken"); // <--- Importante instalar esta librería
+const JWT_SECRET = process.env.JWT_SECRET || "mi_llave_secreta_provisional";
 
 exports.register = async (data) => {
   const hashed = await bcrypt.hash(data.password, 10);
@@ -25,7 +26,7 @@ exports.login = async (email, password) => {
   // Usa una palabra secreta para firmar el token
   const token = jwt.sign(
     { id: user._id, role: user.role || "user" },
-    "mi_llave_secreta_provisional", 
+    JWT_SECRET,
     { expiresIn: "24h" }
   );
 

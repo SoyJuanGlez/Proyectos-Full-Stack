@@ -3,6 +3,7 @@ const axios = require("axios");
 const STRIPE_API_BASE = "https://api.stripe.com/v1";
 const DEFAULT_FRONTEND_URL = "http://localhost:5173";
 const DEFAULT_CURRENCY = "mxn";
+const MOCK_SESSION_PREFIX = "mock_session_";
 
 const getStripeSecretKey = () => {
   const secretKey = process.env.STRIPE_SECRET_KEY;
@@ -20,12 +21,34 @@ const buildStripeHeaders = () => ({
 });
 
 const getFrontendUrl = () => process.env.FRONTEND_URL || DEFAULT_FRONTEND_URL;
+const isDemoMode = () => process.env.STRIPE_DEMO_MODE === "true";
 
 const isValidImageUrl = (value) => /^https?:\/\//i.test(value || "");
+
+const buildMockSession = (items = []) => {
+  const sessionId = `${MOCK_SESSION_PREFIX}${Date.now()}`;
+  const amountTotal = items.reduce((sum, item) => {
+    return sum + Math.round(Number(item.price || 0) * 100) * Math.max(1, Number(item.quantity || 1));
+  }, 0);
+
+  return {
+    id: sessionId,
+    url: `${getFrontendUrl()}/checkout-demo?session_id=${sessionId}`,
+    payment_status: "paid",
+    status: "complete",
+    amount_total: amountTotal,
+    currency: DEFAULT_CURRENCY,
+    customer_details: null,
+  };
+};
 
 exports.createCheckoutSession = async (items = []) => {
   if (!Array.isArray(items) || items.length === 0) {
     throw new Error("El carrito esta vacio");
+  }
+
+  if (isDemoMode()) {
+    return buildMockSession(items);
   }
 
   const params = new URLSearchParams();
@@ -66,6 +89,17 @@ exports.createCheckoutSession = async (items = []) => {
 exports.getCheckoutSession = async (sessionId) => {
   if (!sessionId) {
     throw new Error("El session_id es requerido");
+  }
+
+  if (sessionId.startsWith(MOCK_SESSION_PREFIX)) {
+    return {
+      id: sessionId,
+      payment_status: "paid",
+      status: "complete",
+      amount_total: 0,
+      currency: DEFAULT_CURRENCY,
+      customer_details: null,
+    };
   }
 
   const response = await axios.get(
