@@ -4,6 +4,15 @@ import { getProducts, createProduct, updateProduct, deleteProduct } from "../ser
 import { useCartStore } from "../store/cartStore";
 import "../styles/catalog.css";
 
+const CATEGORY_OPTIONS = [
+  { id: "hoodies", name: "Hoodies" },
+  { id: "camisetas", name: "Camisetas" },
+  { id: "pantalones", name: "Pantalones" },
+  { id: "calzado", name: "Calzado" },
+  { id: "chaquetas", name: "Chaquetas" },
+  { id: "accesorios", name: "Accesorios" },
+];
+
 const Catalog = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -132,10 +141,7 @@ const Catalog = () => {
 
   const categories = [
     { id: "todos", name: "Todos" },
-    { id: "hoodies", name: "Hoodies" },
-    { id: "camisetas", name: "Camisetas" },
-    { id: "pantalones", name: "Pantalones" },
-    { id: "accesorios", name: "Accesorios" }
+    ...CATEGORY_OPTIONS
   ];
 
   // Obtener estilos y colores únicos de los productos
@@ -227,10 +233,11 @@ const Catalog = () => {
                 value={newProduct.category}
                 onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
               >
-                <option value="hoodies">Hoodies</option>
-                <option value="camisetas">Camisetas</option>
-                <option value="pantalones">Pantalones</option>
-                <option value="accesorios">Accesorios</option>
+                {CATEGORY_OPTIONS.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="form-row">

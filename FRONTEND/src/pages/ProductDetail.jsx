@@ -4,6 +4,13 @@ import { getProducts } from "../services/productService";
 import { useCartStore } from "../store/cartStore";
 import "../styles/productDetail.css";
 
+const APPAREL_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+const MEXICAN_SHOE_SIZES = [
+  "22", "22.5", "23", "23.5", "24", "24.5",
+  "25", "25.5", "26", "26.5", "27", "27.5",
+  "28", "28.5", "29", "29.5", "30"
+];
+
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -16,7 +23,8 @@ const ProductDetail = () => {
   const [added, setAdded] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
-  const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
+  const isFootwear = product?.category === "calzado";
+  const sizes = isFootwear ? MEXICAN_SHOE_SIZES : APPAREL_SIZES;
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -28,7 +36,7 @@ const ProductDetail = () => {
         } else {
           setProduct(found);
         }
-      } catch (err) {
+      } catch {
         setError("Error al cargar el producto.");
       } finally {
         setLoading(false);
@@ -126,7 +134,7 @@ const ProductDetail = () => {
           {/* Selector de tallas */}
           <div className="pd-section">
             <p className="pd-section-label">
-              TALLA
+              {isFootwear ? "TALLA MX" : "TALLA"}
               {!selectedSize && <span className="pd-required"> (requerida)</span>}
             </p>
             <div className="pd-sizes">
@@ -168,7 +176,11 @@ const ProductDetail = () => {
           </button>
 
           {!selectedSize && product.stock > 0 && (
-            <p className="pd-size-hint">Selecciona una talla para continuar</p>
+            <p className="pd-size-hint">
+              {isFootwear
+                ? "Selecciona tu talla mexicana para continuar"
+                : "Selecciona una talla para continuar"}
+            </p>
           )}
 
           <div className="pd-divider" />
