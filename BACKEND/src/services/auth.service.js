@@ -1,43 +1,56 @@
-const User = require("../models/user.model");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken"); // <--- Importante instalar esta librería
+
+const User      = require("../models/user.model");
+const bcrypt    = require("bcryptjs");
+const jwt       = require("jsonwebtoken");
+
 const JWT_SECRET = process.env.JWT_SECRET || "mi_llave_secreta_provisional";
 
+// ── Registro ──────────────────────────────────────────────────────────────────
 exports.register = async (data) => {
+  // Verificar si el email ya existe
+  const exists = await User.findOne({ email: data.email?.toLowerCase() });
+  if (exists) throw new Error("El email ya está registrado.");
+
   const hashed = await bcrypt.hash(data.password, 10);
-  return await User.create({
-    name: data.name,
-    email: data.email,
+
+  // NUNCA tomamos data.role del body — siempre "user"
+  const user = await User.create({
+    name:     data.name,
+    email:    data.email,
     password: hashed,
-    role: data.role || "user" // Evita errores si el esquema pide role
+    role:     "user",   // fijo, ignoramos cualquier role que venga del body
   });
+
+  return {
+    id:    user._id,
+    name:  user.name,
+    email: user.email,
+    role:  user.role,
+  };
 };
 
+// ── Login ─────────────────────────────────────────────────────────────────────
 exports.login = async (email, password) => {
-  // 1. Buscar al usuario
-  const user = await User.findOne({ email });
-  if (!user) throw new Error("Usuario no encontrado");
+  const user = await User.findOne({ email: email?.toLowerCase() });
+  if (!user) throw new Error("Credenciales inválidas.");  // mensaje genérico (no revelar si existe el email)
 
-  // 2. Comparar contraseñas
   const valid = await bcrypt.compare(password, user.password);
-  if (!valid) throw new Error("Credenciales inválidas");
+  if (!valid) throw new Error("Credenciales inválidas.");
 
-  // 3. GENERAR EL TOKEN (Esto evita el error 500 en el flujo)
-  // Usa una palabra secreta para firmar el token
+  // El token incluye el rol — así los middlewares pueden leerlo sin consultar la BD
   const token = jwt.sign(
-    { id: user._id, role: user.role || "user" },
+    { id: user._id, role: user.role },
     JWT_SECRET,
     { expiresIn: "24h" }
   );
 
-  // 4. Retornar el objeto COMPLETO que espera tu Frontend
   return {
     token,
     user: {
-      id: user._id,
-      name: user.name,
+      id:    user._id,
+      name:  user.name,
       email: user.email,
-      role: user.role || "user"
-    }
+      role:  user.role,   // el frontend puede usarlo para mostrar/ocultar opciones de admin
+    },
   };
 };

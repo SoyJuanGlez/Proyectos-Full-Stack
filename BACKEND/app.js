@@ -1,27 +1,35 @@
+// ============================================================
+// app.js — Configuración principal de Express
+// El error.middleware DEBE registrarse al final (firma de 4 args)
+// ============================================================
+ 
 const express = require("express");
-const cors = require("cors");
+const cors    = require("cors");
 
 const app = express();
+
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
-app.use(cors({
-  origin: allowedOrigins
-}));
-app.use(express.json());
+app.use(cors({ origin: allowedOrigins }));
+app.use(express.json({ limit: "50kb" })); // Limita el tamaño del body para evitar ataques
 
 app.get("/", (req, res) => {
   res.send("🚀 API OutfAit funcionando correctamente");
 });
 
-app.use("/api/auth", require("./src/routes/auth.routes"));
+// ── Rutas ─────────────────────────────────────────────────────────────────────
+app.use("/api/auth",     require("./src/routes/auth.routes"));
 app.use("/api/products", require("./src/routes/product.routes"));
-app.use("/api/orders", require("./src/routes/order.routes"));
-app.use("/api/outfit", require("./src/routes/outfit.routes"));
-app.use("/api/ai", require("./src/routes/ai.routes"));
+app.use("/api/orders",   require("./src/routes/order.routes"));   // ← con seguridad completa
+app.use("/api/outfit",   require("./src/routes/outfit.routes"));
+app.use("/api/ai",       require("./src/routes/ai.routes"));
 app.use("/api/payments", require("./src/routes/payment.routes"));
+
+// ── Manejador global de errores (siempre al final) ────────────────────────────
+app.use(require("./src/middlewares/error.middleware"));
 
 module.exports = app;

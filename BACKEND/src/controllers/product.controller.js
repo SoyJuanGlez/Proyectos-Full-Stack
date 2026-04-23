@@ -1,43 +1,50 @@
+
 const productService = require("../services/product.service");
 
-exports.getProducts = async (req, res) => {
+exports.getProducts = async (req, res, next) => {
   try {
     const products = await productService.getAll();
     res.json(products);
   } catch (error) {
-    res.status(500).json({ message: "Error obteniendo productos" });
+    next(error);
   }
 };
 
-exports.createProduct = async (req, res) => {
+exports.getProductById = async (req, res, next) => {
+  try {
+    const product = await productService.getById(req.params.id);
+    if (!product) return res.status(404).json({ message: "Producto no encontrado." });
+    res.json(product);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.createProduct = async (req, res, next) => {
   try {
     const product = await productService.create(req.body);
     res.status(201).json(product);
   } catch (error) {
-    res.status(500).json({ message: "Error creando producto" });
+    next(error);
   }
 };
 
-exports.updateProduct = async (req, res) => {
+exports.updateProduct = async (req, res, next) => {
   try {
     const product = await productService.update(req.params.id, req.body);
-    if (!product) {
-      return res.status(404).json({ message: "Producto no encontrado" });
-    }
+    if (!product) return res.status(404).json({ message: "Producto no encontrado." });
     res.json(product);
   } catch (error) {
-    res.status(500).json({ message: "Error actualizando producto" });
+    next(error);
   }
 };
 
-exports.deleteProduct = async (req, res) => {
+exports.deleteProduct = async (req, res, next) => {
   try {
     const product = await productService.delete(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: "Producto no encontrado" });
-    }
-    res.json({ message: "Producto eliminado" });
+    if (!product) return res.status(404).json({ message: "Producto no encontrado." });
+    res.json({ message: "Producto eliminado." });
   } catch (error) {
-    res.status(500).json({ message: "Error eliminando producto" });
+    next(error);
   }
 };

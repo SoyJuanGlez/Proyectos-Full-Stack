@@ -1,83 +1,77 @@
+
 const userService = require("../services/user.service");
 
-exports.getUsers = async (req, res) => {
+exports.getUsers = async (req, res, next) => {
   try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Solo administradores pueden listar usuarios" });
-    }
-
     const users = await userService.getAllUsers();
     res.json(users);
   } catch (error) {
-    res.status(500).json({ message: "Error obteniendo usuarios" });
+    next(error);
   }
 };
 
-exports.getUser = async (req, res) => {
+exports.getUser = async (req, res, next) => {
   try {
-    const userId = req.params.id;
-
-    if (req.user.role !== "admin" && req.user.id !== userId) {
-      return res.status(403).json({ message: "Acceso denegado" });
+    // Admin puede ver cualquier usuario; un user solo puede verse a sí mismo
+    if (req.user.role !== "admin" && req.user.id !== req.params.id) {
+      return res.status(403).json({ message: "Acceso denegado." });
     }
 
-    const user = await userService.getUserById(userId);
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    const user = await userService.getUserById(req.params.id);
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado." });
 
     res.json(user);
   } catch (error) {
-    res.status(500).json({ message: "Error obteniendo usuario" });
+    next(error);
   }
 };
 
-exports.updateUser = async (req, res) => {
+exports.updateUser = async (req, res, next) => {
   try {
-    const userId = req.params.id;
-
-    if (req.user.role !== "admin" && req.user.id !== userId) {
-      return res.status(403).json({ message: "Acceso denegado" });
+    // Solo admin o el propio usuario pueden editar
+    if (req.user.role !== "admin" && req.user.id !== req.params.id) {
+      return res.status(403).json({ message: "Acceso denegado." });
     }
 
-    const user = await userService.updateUser(userId, req.body);
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    // ⚠️ Bloqueamos el cambio de rol desde este endpoint
+    // Los roles SOLO se cambian desde PATCH /:id/role
+    const { role: _role, password: _password, ...safeData } = req.body;
+
+    const user = await userService.updateUser(req.params.id, safeData);
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado." });
 
     res.json(user);
   } catch (error) {
-    res.status(500).json({ message: "Error actualizando usuario" });
+    next(error);
   }
 };
 
-exports.deleteUser = async (req, res) => {
+exports.deleteUser = async (req, res, next) => {
   try {
-    const userId = req.params.id;
-
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Solo admin puede eliminar" });
+    // Evitar que el admin se elimine a sí mismo
+    if (req.params.id === req.user.id) {
+      return res.status(409).json({ message: "No puedes eliminar tu propia cuenta." });
     }
 
-    const user = await userService.deleteUser(userId);
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    const user = await userService.deleteUser(req.params.id);
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado." });
 
-    res.json({ message: "Usuario eliminado" });
+    res.json({ message: "Usuario eliminado." });
   } catch (error) {
-    res.status(500).json({ message: "Error eliminando usuario" });
+    next(error);
   }
 };
 
-exports.createUser = async (req, res) => {
+exports.createUser = async (req, res, next) => {
   try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Solo admin puede crear usuario" });
-    }
-
     const user = await userService.createUser(req.body);
     res.status(201).json({
-      id: user._id,
-      name: user.name,
+      id:    user._id,
+      name:  user.name,
       email: user.email,
-      role: user.role
+      role:  user.role,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error creando usuario" });
+    next(error);
   }
 };

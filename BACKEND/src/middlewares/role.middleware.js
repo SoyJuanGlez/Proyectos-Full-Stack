@@ -1,10 +1,13 @@
-module.exports = (requiredRole) => (req, res, next) => {
+
+module.exports = (...allowedRoles) => (req, res, next) => {
   if (!req.user) {
-    return res.status(401).json({ message: "No autorizado" });
+    return res.status(401).json({ message: "No autenticado." });
   }
 
-  if (req.user.role !== requiredRole) {
-    return res.status(403).json({ message: "Debe ser administrador" });
+  if (!allowedRoles.includes(req.user.role)) {
+    return res.status(403).json({
+      message: `Acceso denegado. Se requiere rol: ${allowedRoles.join(" o ")}.`,
+    });
   }
 
   next();
