@@ -86,7 +86,7 @@ const findMatchingProducts = async (prompt) => {
   }
 
   if (orConditions.length === 0) {
-    return await Product.aggregate([{ $sample: { size: 3 } }]);
+    return await Product.aggregate([{ $sample: { size: 5 } }]);
   }
 
   const matched = await Product.aggregate([
@@ -95,7 +95,7 @@ const findMatchingProducts = async (prompt) => {
   ]);
 
   if (matched.length === 0) {
-    return await Product.aggregate([{ $sample: { size: 3 } }]);
+    return await Product.aggregate([{ $sample: { size: 5 } }]);
   }
 
   return matched;
@@ -174,7 +174,7 @@ Con base en estos productos reales, recomiéndale al usuario los que mejor se ad
     res.json({
       reply,
 
-      items: noResults ? [] : matchedProducts.slice(0, 3),
+      items: noResults ? [] : matchedProducts.slice(0, 5),
     });
 
   } catch (error) {

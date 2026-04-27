@@ -242,6 +242,62 @@
   cursor: not-allowed;
 }
 
+/* ============================================================
+   Agrega estas reglas al final de quiz.css
+   Nuevos elementos: .message-time, .btn-clear-history,
+   ajuste de .chat-header para el botón de limpiar
+   ============================================================ */
+
+/* ── Timestamp debajo de cada burbuja ── */
+.message-time {
+  display: block;
+  font-size: 11px;
+  opacity: 0.45;
+  margin-top: 5px;
+  text-align: right;
+  user-select: none;      /* no se selecciona al copiar texto del chat */
+}
+
+.message.user .message-time {
+  text-align: right;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.message.ai .message-time {
+  text-align: left;
+  color: #888;
+}
+
+/* ── Ajuste del encabezado para acomodar el botón de limpiar ── */
+.chat-header {
+  justify-content: flex-start;   /* sobreescribe si el original era center */
+}
+
+.chat-header-text {
+  flex: 1;          /* empuja el botón de limpiar al extremo derecho */
+}
+
+/* ── Botón "Limpiar historial" ── */
+.btn-clear-history {
+  margin-left: auto;
+  padding: 7px 13px;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.75);
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-clear-history:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
 /* ── Responsive ── */
 @media (max-width: 600px) {
   .chat-container {
