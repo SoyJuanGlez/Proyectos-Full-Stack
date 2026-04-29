@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Quiz from "./pages/Quiz";
 import ProductDetail from "./pages/ProductDetail";
 import CheckoutDemo from "./pages/CheckoutDemo";
+import TryOn from "./pages/TryOn";
 
 import Profile from "./pages/Profile";
 
@@ -25,6 +26,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/try-on" element={<TryOn />} />
       </Routes>
     </BrowserRouter>
   );

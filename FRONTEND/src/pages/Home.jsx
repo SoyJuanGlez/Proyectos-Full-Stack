@@ -38,6 +38,8 @@ const Home = () => {
           <div className="hero-buttons">
             <Link to="/quiz" className="btn btn-primary">Descubrir Ahora</Link>
             <Link to="/catalog" className="btn btn-secondary">Explorar Catálogo</Link>
+
+            <Link to="/try-on" className="btn btn-secondary">Probar Outfit</Link>
           </div>
         </div>
         <div className="hero-background">

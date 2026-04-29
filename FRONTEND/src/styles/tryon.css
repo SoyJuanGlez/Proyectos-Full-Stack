@@ -1,0 +1,230 @@
+/* 🔥 RESET */
+html, body {
+   margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto; /* ✅ vuelve el scroll global */
+  background: #000;
+  color: white;
+}
+
+/* CONTENEDOR GENERAL */
+.tryon-container {
+  display: flex;
+  height: calc(100vh - 80px);
+  overflow: hidden;
+}
+
+/* ================= IZQUIERDA ================= */
+.left-panel {
+  width: 260px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* INFO */
+.info-panel {
+  background: rgba(255,255,255,0.05);
+  padding: 15px;
+  border-radius: 12px;
+}
+
+/* FILTROS */
+.filters-panel {
+  background: rgba(255,255,255,0.05);
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.filters-panel select,
+.filters-panel input {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  background: #111;
+  color: white;
+}
+
+/* ================= MAIN ================= */
+.tryon-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  overflow: hidden; /* 🔥 evita scroll raro */
+}
+
+/* 🔥 ZONA SUPERIOR (CENTRADO REAL) */
+.outfit-view {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  padding: 20px;
+}
+
+/* ITEMS DEL OUTFIT */
+.outfit-item {
+  position: relative;
+}
+
+.outfit-item img {
+  width: 120px;
+}
+
+.outfit-item button {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: red;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* MENSAJE VACÍO */
+.empty-msg {
+  opacity: 0.6;
+}
+
+/* BOTONES */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+.actions button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+/* ================= CAJÓN ================= */
+.clothes-bar {
+  height: 170px;
+
+  display: flex;
+  gap: 20px;
+
+  padding: 20px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  border-top: 1px solid rgba(255,255,255,0.1);
+
+  /* 🔥 CLAVE */
+  flex-shrink: 0;
+}
+
+/* TARJETAS */
+.cloth-card {
+  min-width: 120px;
+  background: #111;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+
+  flex-shrink: 0;
+
+  transition: 0.2s;
+}
+
+.cloth-card:hover {
+  transform: scale(1.05);
+}
+
+.cloth-card img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+/* TEXTO */
+.loading-text {
+  margin: auto;
+  opacity: 0.7;
+}
+
+/* ================= DRAWER ================= */
+.open-saved-btn {
+  position: fixed;
+  right: 10px;
+  top: 100px;
+  z-index: 10;
+
+  background: #111;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.drawer {
+  position: fixed;
+
+  top: 80px; /* 🔥 altura del navbar */
+  right: -300px;
+
+  width: 300px;
+  height: calc(100vh - 80px); /* 🔥 ocupa solo debajo del menú */
+
+  background: #111;
+  padding: 20px;
+
+  transition: 0.3s;
+
+  z-index: 5; /* menor que el navbar */
+}
+
+.drawer.open {
+  right: 0;
+}
+
+/* HEADER DRAWER */
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* LISTA */
+.saved-list {
+  margin-top: 20px;
+}
+
+/* TARJETAS */
+.saved-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.mini-outfit img {
+  width: 40px;
+}
+
+.delete-btn {
+  margin-left: auto;
+  background: red;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
