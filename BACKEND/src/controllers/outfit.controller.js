@@ -1,5 +1,7 @@
+// Controlador alterno para buscar outfits por estilo y color.
 const Product = require("../models/Product");
 
+// Busca productos que cumplan simultaneamente con el estilo y color enviados.
 exports.generateOutfit = async (req, res) => {
   try {
     const { style, color } = req.body;
@@ -9,6 +11,7 @@ exports.generateOutfit = async (req, res) => {
       color
     });
 
+    // Devuelve todos los productos coincidentes sin agrupar por categoria.
     res.json(products);
 
   } catch (error) {

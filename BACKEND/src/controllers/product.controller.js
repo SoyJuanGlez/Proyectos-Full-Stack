@@ -1,5 +1,6 @@
 const productService = require("../services/product.service");
 
+// Devuelve el catalogo completo.
 exports.getProducts = async (req, res) => {
   try {
     const products = await productService.getAll();
@@ -9,6 +10,7 @@ exports.getProducts = async (req, res) => {
   }
 };
 
+// Crea un producto nuevo con los datos del body.
 exports.createProduct = async (req, res) => {
   try {
     const product = await productService.create(req.body);
@@ -18,9 +20,12 @@ exports.createProduct = async (req, res) => {
   }
 };
 
+// Actualiza un producto existente.
 exports.updateProduct = async (req, res) => {
   try {
     const product = await productService.update(req.params.id, req.body);
+
+    // Si el ID no existe, respondemos 404 en vez de exito vacio.
     if (!product) {
       return res.status(404).json({ message: "Producto no encontrado" });
     }
@@ -30,6 +35,7 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
+// Elimina un producto del catalogo.
 exports.deleteProduct = async (req, res) => {
   try {
     const product = await productService.delete(req.params.id);

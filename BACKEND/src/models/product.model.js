@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// Modelo basico de producto del catalogo.
 const productSchema = new mongoose.Schema({
   name: String,
   price: Number,
