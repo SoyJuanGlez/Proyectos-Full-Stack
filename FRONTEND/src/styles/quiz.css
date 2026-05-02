@@ -1,3 +1,7 @@
+/* ============================================================
+   quiz.css — Estilos del chatbot OUTF-AI
+   Diseño: burbujas de chat, tarjetas de producto, animaciones
+   ============================================================ */
 
 /* ── Contenedor principal del chat ── */
 .chat-container {
@@ -242,62 +246,6 @@
   cursor: not-allowed;
 }
 
-/* ============================================================
-   Agrega estas reglas al final de quiz.css
-   Nuevos elementos: .message-time, .btn-clear-history,
-   ajuste de .chat-header para el botón de limpiar
-   ============================================================ */
-
-/* ── Timestamp debajo de cada burbuja ── */
-.message-time {
-  display: block;
-  font-size: 11px;
-  opacity: 0.45;
-  margin-top: 5px;
-  text-align: right;
-  user-select: none;      /* no se selecciona al copiar texto del chat */
-}
-
-.message.user .message-time {
-  text-align: right;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.message.ai .message-time {
-  text-align: left;
-  color: #888;
-}
-
-/* ── Ajuste del encabezado para acomodar el botón de limpiar ── */
-.chat-header {
-  justify-content: flex-start;   /* sobreescribe si el original era center */
-}
-
-.chat-header-text {
-  flex: 1;          /* empuja el botón de limpiar al extremo derecho */
-}
-
-/* ── Botón "Limpiar historial" ── */
-.btn-clear-history {
-  margin-left: auto;
-  padding: 7px 13px;
-  background: transparent;
-  border: 1.5px solid rgba(255, 255, 255, 0.25);
-  color: rgba(255, 255, 255, 0.75);
-  border-radius: 20px;
-  font-size: 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-}
-
-.btn-clear-history:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
 /* ── Responsive ── */
 @media (max-width: 600px) {
   .chat-container {
@@ -318,3 +266,118 @@
     max-width: 100%;
   }
 }
+
+/* ============================================================
+   CARDS GRID — 6 productos en 3×2, se adapta a 2×3 en móvil
+   ============================================================ */
+
+/* Contenedor general de items — ahora usa grid en lugar de flex-wrap */
+.recommended-items .items-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);  /* 3 columnas por defecto */
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* ── Mini card rediseñada para grid ── */
+.mini-card {
+  position: relative;      /* para el badge de categoría */
+  flex-direction: column;  /* imagen arriba, info abajo */
+  min-width: unset;
+  max-width: unset;
+  width: 100%;
+  padding: 8px;
+  gap: 6px;
+}
+
+.mini-card-img {
+  width: 100%;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.mini-card-info {
+  gap: 3px;
+}
+
+.mini-name {
+  max-width: 100%;
+  font-size: 12px;
+  white-space: normal;       /* permite 2 líneas si el nombre es largo */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ── Badge de categoría (esquina superior izquierda de la card) ── */
+.mini-category-badge {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: rgba(26, 26, 46, 0.82);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+  text-transform: capitalize;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Modo outfit: encabezado y borde especial ── */
+.recommended-items.outfit-grid {
+  background: linear-gradient(135deg, rgba(26,26,46,0.04), rgba(99,89,255,0.06));
+  border: 1.5px solid rgba(99, 89, 255, 0.18);
+  border-radius: 14px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.outfit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #4a3fbf;
+}
+
+.outfit-count {
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(99,89,255,0.12);
+  color: #4a3fbf;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* Card dentro de outfit: borde sutil para distinguir prendas */
+.mini-card.outfit-piece {
+  border-color: rgba(99, 89, 255, 0.2);
+}
+
+.mini-card.outfit-piece:hover {
+  border-color: rgba(99, 89, 255, 0.5);
+  box-shadow: 0 4px 12px rgba(99, 89, 255, 0.15);
+}
+
+/* ── Responsive: 2 columnas en tablet/móvil ── */
+@media (max-width: 600px) {
+  .recommended-items .items-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mini-card-img {
+    height: 60px;
+  }
+}
+

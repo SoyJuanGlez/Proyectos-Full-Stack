@@ -63,6 +63,7 @@ const Quiz = () => {
           text:      data.reply || "No encontré resultados. Intenta pedirme un outfit o una prenda específica.",
           timestamp: Date.now(),
           items:     isNoResults ? [] : (data.items || []),
+          isOutfit:  !isNoResults && !!data.isOutfit,
         },
       ]);
     } catch (error) {
@@ -120,29 +121,42 @@ const Quiz = () => {
             <p>{msg.text}</p>
 
             {msg.items && msg.items.length > 0 && (
-              <div className="recommended-items">
-                {msg.items.map((item) => (
-                  <div
-                    key={item._id}
-                    className="mini-card"
-                    onClick={() => navigate(`/product/${item._id}`)}
-                    title={`Ver ${item.name}`}
-                  >
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="mini-card-img"
-                      onError={(e) => {
-                        e.target.src = "https://via.placeholder.com/80x80?text=👕";
-                      }}
-                    />
-                    <div className="mini-card-info">
-                      <span className="mini-name">{item.name}</span>
-                      <span className="mini-price">${item.price}</span>
-                      {item.color && <span className="mini-color">{item.color}</span>}
-                    </div>
+              <div className={`recommended-items${msg.isOutfit ? " outfit-grid" : ""}`}>
+                {/* Encabezado solo para outfits */}
+                {msg.isOutfit && (
+                  <div className="outfit-header">
+                    <span>✨ Outfit completo</span>
+                    <span className="outfit-count">{msg.items.length} prendas</span>
                   </div>
-                ))}
+                )}
+                <div className="items-grid">
+                  {msg.items.map((item) => (
+                    <div
+                      key={item._id}
+                      className={`mini-card${msg.isOutfit ? " outfit-piece" : ""}`}
+                      onClick={() => navigate(`/product/${item._id}`)}
+                      title={`Ver ${item.name}`}
+                    >
+                      {/* Badge de categoría */}
+                      {item.category && (
+                        <span className="mini-category-badge">{item.category}</span>
+                      )}
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="mini-card-img"
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/80x80?text=👕";
+                        }}
+                      />
+                      <div className="mini-card-info">
+                        <span className="mini-name">{item.name}</span>
+                        <span className="mini-price">${item.price}</span>
+                        {item.color && <span className="mini-color">{item.color}</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 

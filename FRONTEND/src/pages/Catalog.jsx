@@ -1,10 +1,3 @@
-// ============================================================
-// Catalog.jsx — Catálogo de productos con control de roles
-//
-// Visible para todos:       grid de productos, filtros, búsqueda
-// Solo visible para admin:  botón "Agregar producto", Editar, Eliminar
-// ============================================================
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getProducts, createProduct, updateProduct, deleteProduct } from "../services/productService";
@@ -40,7 +33,6 @@ const Catalog = () => {
   const [selectedCategory, setSelectedCategory] = useState("todos");
   const [sortBy,           setSortBy]           = useState("relevancia");
   const [priceRange,       setPriceRange]       = useState([0, 2000]);
-  const [selectedStyle,    setSelectedStyle]    = useState("todos");
   const [selectedColor,    setSelectedColor]    = useState("todos");
 
   // ── Formulario admin ─────────────────────────────────────────────────────
@@ -136,7 +128,6 @@ const Catalog = () => {
 
   // ── Filtrado y ordenado ──────────────────────────────────────────────────
   const categories = [{ id: "todos", name: "Todos" }, ...CATEGORY_OPTIONS];
-  const styles     = ["todos", ...new Set(products.map((p) => p?.style).filter(Boolean))];
   const colors     = ["todos", ...new Set(products.map((p) => p?.color).filter(Boolean))];
 
   let filtered = products.filter((p) => {
@@ -144,7 +135,6 @@ const Catalog = () => {
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
       (selectedCategory === "todos" || p.category === selectedCategory) &&
       p.price >= priceRange[0] && p.price <= priceRange[1] &&
-      (selectedStyle === "todos" || p.style === selectedStyle) &&
       (selectedColor === "todos" || p.color === selectedColor)
     );
   });
@@ -155,12 +145,12 @@ const Catalog = () => {
 
   const hasActiveFilters =
     searchTerm || selectedCategory !== "todos" ||
-    selectedStyle !== "todos" || selectedColor !== "todos" ||
+    selectedColor !== "todos" ||
     priceRange[0] > 0 || priceRange[1] < 2000;
 
   const clearFilters = () => {
     setSearchTerm(""); setSelectedCategory("todos");
-    setSelectedStyle("todos"); setSelectedColor("todos");
+    setSelectedColor("todos");
     setPriceRange([0, 2000]);
   };
 
@@ -248,12 +238,6 @@ const Catalog = () => {
             <label>Categoría</label>
             <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-          </div>
-          <div className="filter-group">
-            <label>Estilo</label>
-            <select value={selectedStyle} onChange={(e) => setSelectedStyle(e.target.value)}>
-              {styles.map((s) => <option key={s} value={s}>{s === "todos" ? "Todos" : s}</option>)}
             </select>
           </div>
           <div className="filter-group">
